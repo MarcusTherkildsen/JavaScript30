@@ -17,6 +17,58 @@
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+const cities = [];
+
+// Now it's time to fetch the json data. There is a new function for that, called "fetch", instead of the .getJSON used in DOKK1NFO. It returns something called a "promise"
+const prom = fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => cities.push(...data)) // The ... is called "spreading into" an array
+
+function findMatches(wordToMatch, cities){
+  return cities.filter(place => {
+
+  // Here we make the actual search
+  // We put a variable into a regular expression (regex)
+
+  const regex = new RegExp(wordToMatch, 'gi'); //<-- g for global (look through whole json), i for insensitive to capital letters or whatever
+  return place.city.match(regex) || place.state.match(regex)
+
+  });
+}
+
+// Function to insert commas in the number displayed
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); // <-- Can't use spaces xD
+}
+
+// Display the found stuff
+function displayMatches() {
+  const matchArray = findMatches(this.value, cities);
+  // Now we have foudn the matches (if any)
+  const html = matchArray.map(place => {
+
+    // Highlight the search string (this.value)
+    const regex = new RegExp(this.value, 'gi');
+    const city = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+    const statename = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+
+
+    return `
+    <li>
+      <span class="name">${city}, ${statename}</span>
+      <span class="population">${numberWithCommas(place.population)}</span>
+    </li>
+    `;
+  }).join(''); // <-- This converts the array returned from matchArray into one long string for displaying
+  suggestions.innerHTML=html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches);
+searchInput.addEventListener('keyup', displayMatches);
+
 </script>
   </body>
 </html>
