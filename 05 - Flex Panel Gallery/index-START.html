@@ -24,6 +24,7 @@
     .panels {
       min-height:100vh;
       overflow: hidden;
+      display: flex; /*Side by side*/
     }
 
     .panel {
@@ -41,6 +42,12 @@
       font-size: 20px;
       background-size:cover;
       background-position:center;
+      /*New stuff*/
+      flex: 1; /*Panels will evenly distribute the space available*/
+      justify-content: center; 
+      align-items: center;
+      display: flex;
+      flex-direction: column;
     }
 
 
@@ -50,11 +57,24 @@
     .panel4 { background-image:url(https://source.unsplash.com/ITjiVXcwVng/1500x1500); }
     .panel5 { background-image:url(https://source.unsplash.com/3MNzGlQM7qs/1500x1500); }
 
+    /*Flex items*/
     .panel > * {
       margin:0;
       width: 100%;
       transition:transform 0.5s;
+      border: solid red 1px;
+      flex: 1 0 auto; /*Make it square*/
+      display:flex; /*Move text left*/
+      justify-content: center;
+      align-items: center;
     }
+
+    /*Move upper row of text out*/
+    .panel > *:first-child {transform: translateY(-100%);}
+    .panel.open-active > *:first-child {transform: translateY(0%);}
+
+    .panel > *:last-child {transform: translateY(100%);}
+    .panel.open-active > *:last-child {transform: translateY(0%);}
 
     .panel p {
       text-transform: uppercase;
@@ -68,6 +88,7 @@
 
     .panel.open {
       font-size:40px;
+      flex: 5; /*When open then 5 times larger*/
     }
 
     .cta {
@@ -107,6 +128,41 @@
   </div>
 
   <script>
+
+    // Grab all panels
+    const panels = document.querySelectorAll('.panel');
+
+    function toggleOpen(){
+      this.classList.toggle('open');
+    }
+
+    function toggleActive(e){
+      
+      /*
+      console.log(e.propertyName);
+      gives 
+      font-size
+      flex-grow
+
+      since we defined that in 
+      .panel.open
+      */
+      // Check to see if there is flex in the name
+      if(e.propertyName.includes('flex')){
+
+        this.classList.toggle('open-active');  
+      }
+      
+    }
+
+    // Listen for click on each panel
+    panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+    //Insert the extra text when fully opened
+    panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
+    /*
+    This would run on pageload and we do not want that 
+    panels.forEach(panel => panel.addEventListener('click', toggleOpen()));
+    */
 
   </script>
 
